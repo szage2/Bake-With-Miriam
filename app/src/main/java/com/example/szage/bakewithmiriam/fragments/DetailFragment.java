@@ -1,6 +1,6 @@
 package com.example.szage.bakewithmiriam.fragments;
 
-import android.net.Uri;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
@@ -36,9 +36,34 @@ public class DetailFragment extends Fragment {
     private LinearLayoutManager ingredientLayoutManager;
     private LinearLayoutManager stepLayoutManager;
     private Recipe mRecipe;
+    private boolean mTwoPane;
+
+    // Define a new interface OnStepClickListener that triggers a callback in the host activity
+    OnStepClickListener mListener;
+
+    // OnStepClickListener interface, calls a method in the host activity named handleOnClick
+    public interface OnStepClickListener {
+        void handleOnClick(int position);
+    }
 
     public DetailFragment() {
         // Required empty public constructor
+    }
+
+    public static DetailFragment newInstance(OnStepClickListener listener) {
+        DetailFragment detailFragment = new DetailFragment();
+        detailFragment.mListener = listener;
+        return detailFragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mListener = (OnStepClickListener) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString());
+        }
     }
 
     @Override
@@ -56,6 +81,7 @@ public class DetailFragment extends Fragment {
         if (getArguments() != null) {
             // If it has, get it into the Recipe object
             mRecipe = getArguments().getParcelable("recipe");
+            mTwoPane = getArguments().getBoolean("twoPane");
         } else Log.i(TAG, "recipe details are not exist");
 
         // Get the list of ingredients and list of steps
@@ -84,7 +110,7 @@ public class DetailFragment extends Fragment {
         mIngredientRecyclerView.setAdapter(mIngredientAdapter);
 
         // Set adapters on Recycler Views
-        mStepAdapter = new StepAdapter(mStepList, recipeName);
+        mStepAdapter = new StepAdapter(mStepList, recipeName, mListener, mTwoPane);
         mStepRecyclerView.setAdapter(mStepAdapter);
 
         // return the rootView

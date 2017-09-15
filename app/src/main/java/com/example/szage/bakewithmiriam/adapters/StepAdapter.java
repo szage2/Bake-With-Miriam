@@ -9,6 +9,7 @@ import android.widget.TextView;
 
 import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.activities.StepActivity;
+import com.example.szage.bakewithmiriam.fragments.DetailFragment;
 import com.example.szage.bakewithmiriam.models.Step;
 
 import java.util.ArrayList;
@@ -21,11 +22,16 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepHolder> {
 
     private ArrayList<Step> mStepList = new ArrayList<>();
     private String mRecipeName;
+    private DetailFragment.OnStepClickListener mListener;
+    private boolean mTwoPane;
 
     // Constructor
-    public StepAdapter(ArrayList<Step> steps, String recipeName) {
+    public StepAdapter(ArrayList<Step> steps, String recipeName,
+                       DetailFragment.OnStepClickListener listener, boolean twoPane) {
         mStepList = steps;
         mRecipeName = recipeName;
+        mListener = listener;
+        mTwoPane = twoPane;
     }
 
     /**
@@ -56,17 +62,25 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepHolder> {
         holder.stepShortDescription.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                // Get the selected Step
                 final Step step = mStepList.get(position);
 
-                // Intent that navigates to Step Activity
-                Intent stepIntent = new Intent(v.getContext(), StepActivity.class);
+                // Notifies the activity about OnClick
+                mListener.handleOnClick(position);
 
-                // Intent passes data to Step Activity
-                stepIntent.putExtra("step", step);
-                stepIntent.putExtra("recipeName", mRecipeName);
+                // In case of one pain mode
+                if (!mTwoPane) {
+                    // Intent that navigates to Step Activity
+                    Intent stepIntent = new Intent(v.getContext(), StepActivity.class);
 
-                // Start the Activity with intent
-                v.getContext().startActivity(stepIntent);
+                    // Intent passes data to Step Activity
+                    stepIntent.putExtra("step", step);
+                    stepIntent.putExtra("recipeName", mRecipeName);
+
+                    // Start the Activity with intent
+                    v.getContext().startActivity(stepIntent);
+                }
             }
         });
     }

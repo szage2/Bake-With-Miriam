@@ -6,7 +6,6 @@
     android:layout_margin="8dp"
     tools:context="com.example.szage.bakewithmiriam.fragments.StepFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/step_description"
         android:layout_width="match_parent"

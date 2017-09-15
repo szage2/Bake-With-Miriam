@@ -14,9 +14,9 @@ import com.example.szage.bakewithmiriam.models.Step;
 
 public class StepActivity extends AppCompatActivity {
 
-    private static final String TAG = StepActivity.class.getSimpleName();
     private Step mStep;
     private StepFragment mStepFragment;
+    private final boolean mTwoPane = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,7 +43,9 @@ public class StepActivity extends AppCompatActivity {
     public void sendDataToStepFragment() {
         Bundle stepBundle = new Bundle();
         stepBundle.putParcelable("step", mStep);
-        // New instance of Recipe Fragment
+        // Notify fragment it's not two pane mode
+        stepBundle.putBoolean("twoPane", mTwoPane);
+        // New instance of Step Fragment
         mStepFragment = new StepFragment();
         // Set the bundle with desired data as arguments of the fragment
         mStepFragment.setArguments(stepBundle);
