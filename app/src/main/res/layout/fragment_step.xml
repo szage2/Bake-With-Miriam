@@ -1,23 +1,38 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/relative_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_margin="8dp"
     tools:context="com.example.szage.bakewithmiriam.fragments.StepFragment">
 
+    <com.google.android.exoplayer2.ui.SimpleExoPlayerView
+        android:id="@+id/playerView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:adjustViewBounds="true"
+        android:layout_alignParentTop="true">
+    </com.google.android.exoplayer2.ui.SimpleExoPlayerView>
+
     <TextView
         android:id="@+id/step_description"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        style="@style/TitleStyle"/>
+        style="@style/TitleStyle"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/playerView"/>
 
     <TextView
         android:id="@+id/long_description"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_height="wrap_content"
         android:paddingTop="8dp"
-        android:paddingBottom="8dp"/>
+        android:paddingBottom="8dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/step_description"
+        />
 
-</LinearLayout>
+</RelativeLayout>

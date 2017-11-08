@@ -29,7 +29,8 @@
                 android:value=".activities.RecipeActivity" />
         </activity>
         <activity android:name=".activities.StepActivity"
-            android:parentActivityName=".activities.DetailActivity">
+            android:parentActivityName=".activities.DetailActivity"
+            android:configChanges="orientation|screenSize">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".activities.DetailActivity" />
