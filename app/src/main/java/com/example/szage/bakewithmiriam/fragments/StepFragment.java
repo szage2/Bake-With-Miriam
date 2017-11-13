@@ -1,5 +1,6 @@
 package com.example.szage.bakewithmiriam.fragments;
 
+import android.content.Context;
 import android.content.res.Configuration;
 import android.net.Uri;
 import android.os.Bundle;
@@ -10,6 +11,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -40,22 +42,51 @@ import java.util.ArrayList;
 public class StepFragment extends Fragment {
 
     private final String TAG = StepFragment.class.getSimpleName();
-    private Step mStep;
-    private boolean mTwoPane;
-    private boolean mIsThereSavedState;
-    private int mStepListIndex;
 
-    private ExoPlayer mExoPlayer;
-    private long mPlayerPosition;
-    private SimpleExoPlayerView mSimpleExoPlayerView;
+    private int mStepListIndex;
+    private ArrayList<Step> mStepList = new ArrayList<>();
+
     private Uri mVideoUri;
     private TextView mStepDescription;
     private TextView mLongStepDescription;
 
+    private boolean mIsThereSavedState;
+
+    private ExoPlayer mExoPlayer;
+    private long mPlayerPosition;
+    private SimpleExoPlayerView mSimpleExoPlayerView;
+
+    private Button mPreviousButton;
+    private Button mNextButton;
+
     private View decorView;
+
+    // Define a new interface OnClickNavigation that triggers a callback in the host activity
+    OnClickNavigation mNavigationListener;
+
+    // OnClickNavigation interface, calls a method in the host activity named handleNavigation
+    public interface OnClickNavigation {
+        void handleNavigation(int listIndex);
+    }
 
     public StepFragment() {
         // Required empty public constructor
+    }
+
+    public static StepFragment newInstance(OnClickNavigation navigationListener) {
+        StepFragment stepFragment = new StepFragment();
+        stepFragment.mNavigationListener = navigationListener;
+        return stepFragment;
+    }
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try{
+            mNavigationListener = (OnClickNavigation) context;
+        } catch (ClassCastException ex) {
+            Log.i(TAG, "There is no navigation callback in two pane mode");
+        }
     }
 
     @Override
@@ -65,43 +96,60 @@ public class StepFragment extends Fragment {
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_step, container, false);
 
+        // Find the view for ExoPlayer
         mSimpleExoPlayerView = (SimpleExoPlayerView) rootView.findViewById(R.id.playerView);
+
+        // Find the view for previous button, attach it
+        mPreviousButton = (Button) rootView.findViewById(R.id.previous_button);
+
+        // Find the view for next button attach it
+        mNextButton = (Button) rootView.findViewById(R.id.next_button);
 
         // If there's a save state of code, store true in a flag
         if (savedInstanceState != null) {
             mIsThereSavedState = true;
         } else mIsThereSavedState = false;
 
-        // Check if the argument has any data sent by the Activity
+        // Check if the argument has any data sent by the Activity/ StepAdapter
         if (getArguments() != null) {
 
-            mTwoPane = getArguments().getBoolean("twoPane");
+            // create Step object
+            Step step;
+            // variable to identify two/single pane mode
+            boolean twoPane;
+
+            // Get the flag to identify two/single pane mode
+            twoPane = getArguments().getBoolean("twoPane");
+            // Get the step list
+            mStepList = getArguments().getParcelableArrayList("steps");
+            // Get the step's list index
+            mStepListIndex = getArguments().getInt("stepListIndex");
+
+            // If a step is selected, get the step from the list with it's index
+            if (mStepListIndex != 0) {
+                step = mStepList.get(mStepListIndex);
+                // If step is not selected yet, set it for the very first step
+            } else step = mStepList.get(0);
 
             // Check whether it's two pane mode
-            if (mTwoPane == true) {
-
-                // If it is, get the steps arrayList and extract the selected step
-                ArrayList<Step> steps = getArguments().getParcelableArrayList("steps");
-
-                // Get the list index of the selected step
-                mStepListIndex = getArguments().getInt("stepListIndex");
-
-                if (mStepListIndex != 0) {
-                    mStep = steps.get(mStepListIndex);
-                    // If step is not selected yet, set it for the very first step
-                } else mStep = steps.get(0);
+            if (twoPane == true) {
+                // In two pane mode
+                // Make the previous and next buttons disappear in two pane mode
+                mPreviousButton.setVisibility(View.GONE);
+                mNextButton.setVisibility(View.GONE);
 
             } else {
-                // Otherwise, get the Step object from the arguments
-                mStep = getArguments().getParcelable("step");
+                // In single pane mode
+                // Call method makeButtonsClickable
+                makeButtonsClickable();
             }
 
             // Get descriptions, and the video URL for Step
-            if (mStep != null) {
-                String shortDescription = (String) mStep.getShortDescription();
-                String longDescription = (String) mStep.getLongDescription();
-                String videoThumbnailURL = (String) mStep.getThumbnailURL();
-                String videoURL = (String) mStep.getVideoUrl();
+            if (step != null) {
+                String shortDescription = step.getShortDescription();
+                String longDescription = step.getLongDescription();
+                String videoThumbnailURL = step.getThumbnailURL();
+                String videoURL = step.getVideoUrl();
 
                 // if there is a video (videoURL or videoThumbnailURL),
                 // parse it and assign it to mVideoUri variable
@@ -126,7 +174,7 @@ public class StepFragment extends Fragment {
                     mSimpleExoPlayerView.setVisibility(View.GONE);
                 }
 
-                // Get the views and set the texts on particular views
+                // Get the text views and set the texts on particular views
                 mStepDescription = (TextView) rootView.findViewById(R.id.step_description);
                 mStepDescription.setText(shortDescription);
                 mLongStepDescription = (TextView) rootView.findViewById(R.id.long_description);
@@ -189,11 +237,58 @@ public class StepFragment extends Fragment {
     }
 
     /**
+     * Make navigation buttons clickable and hide them if they are not needed
+     */
+    private void makeButtonsClickable() {
+
+        // Set a click listener on previous button
+        mPreviousButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Make sure to avoid Index out of range error
+                if (mStepListIndex != 0) {
+                    // decrease the list index by 1
+                    mStepListIndex--;
+                    // set the callback
+                    mNavigationListener.handleNavigation(mStepListIndex);
+                }
+            }
+        });
+
+        // Set a click listener on next button
+        mNextButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                // Make sure to avoid Index out of range error
+                if (mStepListIndex <= mStepList.size() -1) {
+                    // increase the list index by 1
+                    mStepListIndex++;
+                    mNavigationListener.handleNavigation(mStepListIndex);
+                }
+            }
+        });
+
+        // If the list index is 0, make the previous button disappear,
+        // because there's no previous step
+        if (mStepListIndex == 0) {
+            mPreviousButton.setVisibility(View.GONE);
+            // If the list index is equals or exceeds the size of the list,
+            // make the previous button disappear as there's no next step
+        } else if (mStepListIndex >= mStepList.size() -1) {
+            mNextButton.setVisibility(View.GONE);
+        }
+    }
+
+    /**
      * If orientation in landscape mode, make video full screen and the rest are invisible
      */
     public void orientationChangedToLandscape() {
+        // Make texts invisible
         mStepDescription.setVisibility(View.GONE);
         mLongStepDescription.setVisibility(View.GONE);
+        // Make navigation buttons invisible
+        mPreviousButton.setVisibility(View.GONE);
+        mNextButton.setVisibility(View.GONE);
         // Resize the player to fill the screen
         mSimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FILL);
     }
@@ -202,8 +297,12 @@ public class StepFragment extends Fragment {
      * If orientation in portrait mode, make views visible
      */
     public void orientationChangedToPortrait() {
+        // Make texts visible
         mStepDescription.setVisibility(View.VISIBLE);
         mLongStepDescription.setVisibility(View.VISIBLE);
+        // Make navigation buttons visible
+        mPreviousButton.setVisibility(View.VISIBLE);
+        mNextButton.setVisibility(View.VISIBLE);
         // Resize the player to fit to layout
         mSimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
     }

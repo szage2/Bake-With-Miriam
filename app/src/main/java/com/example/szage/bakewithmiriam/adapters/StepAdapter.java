@@ -1,7 +1,9 @@
 package com.example.szage.bakewithmiriam.adapters;
 
 import android.content.Intent;
+import android.support.design.widget.TabLayout;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -77,6 +79,8 @@ public class StepAdapter extends RecyclerView.Adapter<StepAdapter.StepHolder> {
                     // Intent passes data to Step Activity
                     stepIntent.putExtra("step", step);
                     stepIntent.putExtra("recipeName", mRecipeName);
+                    stepIntent.putExtra("steps", mStepList);
+                    stepIntent.putExtra("stepListIndex", position);
 
                     // Start the Activity with intent
                     v.getContext().startActivity(stepIntent);

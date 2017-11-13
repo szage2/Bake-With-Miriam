@@ -12,13 +12,17 @@ import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.fragments.StepFragment;
 import com.example.szage.bakewithmiriam.models.Step;
 
+import java.util.ArrayList;
+
 /**
  * Detail Activity passes the Step Object to it's fragment.
  */
 
-public class StepActivity extends AppCompatActivity {
+public class StepActivity extends AppCompatActivity implements StepFragment.OnClickNavigation{
 
     private Step mStep;
+    private ArrayList<Step> mStepList = new ArrayList<>();
+    private int mStepListIndex;
     private StepFragment mStepFragment;
     private final boolean mTwoPane = false;
 
@@ -36,20 +40,26 @@ public class StepActivity extends AppCompatActivity {
         if (extras != null) {
             mStep = (Step) extras.get("step");
             String recipeName = (String) extras.get("recipeName");
-
+            mStepList = (ArrayList<Step>) extras.get("steps");
+            // Get the index of the selected step
+            mStepListIndex = extras.getInt("stepListIndex");
             // set the recipe name as title of the support action bar
             this.getSupportActionBar().setTitle(recipeName);
 
+            // call sendDataToStepFragment method.
             sendDataToStepFragment();
         }
     }
 
-    // Activity passes the Step object to it's Fragment when it gets created
+    // Activity passes data to it's Fragment when it gets created
     public void sendDataToStepFragment() {
         Bundle stepBundle = new Bundle();
-        stepBundle.putParcelable("step", mStep);
         // Notify fragment it's not two pane mode
         stepBundle.putBoolean("twoPane", mTwoPane);
+        // Send the list of Step Objects
+        stepBundle.putParcelableArrayList("steps", mStepList);
+        // Send the position of the Object
+        stepBundle.putInt("stepListIndex", mStepListIndex);
         // New instance of Step Fragment
         mStepFragment = new StepFragment();
         // Set the bundle with desired data as arguments of the fragment
@@ -78,5 +88,12 @@ public class StepActivity extends AppCompatActivity {
     protected void onRestoreInstanceState(Bundle savedInstanceState) {
         super.onRestoreInstanceState(savedInstanceState);
         mStep = savedInstanceState.getParcelable("step");
+    }
+
+    @Override
+    public void handleNavigation(int listIndex) {
+        mStepListIndex = listIndex;
+        Log.i("TAG", "ListIndex in Step Activity is " + mStepListIndex);
+        sendDataToStepFragment();
     }
 }
