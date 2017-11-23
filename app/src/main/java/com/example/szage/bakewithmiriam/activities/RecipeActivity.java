@@ -1,7 +1,9 @@
 package com.example.szage.bakewithmiriam.activities;
 
+import android.app.FragmentManager;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -54,8 +56,9 @@ public class RecipeActivity extends AppCompatActivity {
         mRecipeFragment =  new RecipeFragment();
         // Set the bundle with desired data as arguments of the fragment
         mRecipeFragment.setArguments(bundle);
-        getSupportFragmentManager().beginTransaction().replace(R.id.recipe_fragment, mRecipeFragment)
-                .commit();
+        // Begin fragment transaction
+        getSupportFragmentManager().
+                beginTransaction().replace(R.id.recipe_fragment, mRecipeFragment).commit();
     }
 
 

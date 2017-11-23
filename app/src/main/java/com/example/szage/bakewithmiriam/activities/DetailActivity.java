@@ -1,6 +1,10 @@
 package com.example.szage.bakewithmiriam.activities;
 
+import android.appwidget.AppWidgetManager;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -10,10 +14,15 @@ import android.widget.Toast;
 import com.example.szage.bakewithmiriam.fragments.DetailFragment;
 import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.fragments.StepFragment;
+import com.example.szage.bakewithmiriam.models.Ingredient;
 import com.example.szage.bakewithmiriam.models.Recipe;
 import com.example.szage.bakewithmiriam.models.Step;
+import com.example.szage.bakewithmiriam.widget.RecipeWidgetProvider;
+import com.google.gson.Gson;
 
 import java.util.ArrayList;
+
+import static com.example.szage.bakewithmiriam.widget.RecipeWidgetProvider.ACTION_UPDATE;
 
 /**
  * Detail Activity passes the Recipe Object to it's fragment.
@@ -58,6 +67,10 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             if (mTwoPane == true && savedInstanceState == null) {
                 sendDataToStepFragment();
             }
+            // Send data to widget's Provider class
+            sendDataToWidget();
+            // Call method updateWidget
+            updateWidget(mRecipe);
         }
     }
 
@@ -79,7 +92,6 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     public void sendDataToStepFragment() {
         // Get the steps Array list
         mSteps = mRecipe.getStepList();
-
         Bundle stepBundle = new Bundle();
         stepBundle.putParcelableArrayList("steps", mSteps);
         // Inform the fragment about two pane mode
@@ -93,6 +105,34 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         // Fragment transaction
         getSupportFragmentManager().beginTransaction()
                 .replace(R.id.step_fragment, mStepFragment).commit();
+    }
+
+    /**
+     * Broadcast the selected recipe to the widget
+     */
+    public void sendDataToWidget() {
+        Log.i(TAG, "sendDataToWidget is called");
+        // Create an intent that will be used for Recipe Widget Provider
+        Intent widgetIntent = new Intent(DetailActivity.this, RecipeWidgetProvider.class);
+        // Set the update action on the intent
+        widgetIntent.setAction(ACTION_UPDATE);
+        // Attach extra data, the selected Recipe object
+        widgetIntent.putExtra("recipe", mRecipe);
+        // Broadcast it to the widget
+        sendBroadcast(widgetIntent);
+    }
+
+    // Once widget is updated
+    public void updateWidget(Recipe recipe) {
+        // Get the application context
+        Context context = getApplicationContext();
+        // get the recipe's ingredient list and convert it go json
+        Gson gson = new Gson();
+        String json = gson.toJson(recipe.getIngredientList());
+        // Edit shared preferences and store json format of ingredients
+        SharedPreferences sharedPreferences = PreferenceManager.getDefaultSharedPreferences(context);
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        editor.putString("savedJsonFormat", json).apply();
     }
 
     /**

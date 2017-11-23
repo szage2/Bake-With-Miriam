@@ -11,4 +11,9 @@
     <string name="steps_title">Steps</string>
     <string name="navigation_previous">Previous step</string>
     <string name="navigation_next">Next step</string>
+    <string name="recipes_title">Recipes</string>
+    <string name="empty_text_view">Ingredients are not available</string>
+    <string name="widget_quantity">Quantity</string>
+    <string name="widget_measure">Measure</string>
+    <string name="widget_ingredient">Ingredient</string>
 </resources>
