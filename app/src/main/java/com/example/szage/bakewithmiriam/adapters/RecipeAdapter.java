@@ -1,6 +1,8 @@
 package com.example.szage.bakewithmiriam.adapters;
 
+import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -12,6 +14,7 @@ import android.widget.TextView;
 import com.example.szage.bakewithmiriam.activities.DetailActivity;
 import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.models.Recipe;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -38,6 +41,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
         public TextView recipeText;
         public TextView servingsText;
         public ImageView recipeImage;
+        public View recipeView;
 
         // Constructor, finds each subviews
         public RecipeHolder(View itemView) {
@@ -45,6 +49,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
             recipeText = (TextView) itemView.findViewById(R.id.recipe_name);
             servingsText = (TextView) itemView.findViewById(R.id.recipe_servings);
             recipeImage = (ImageView) itemView.findViewById(R.id.recipe_image);
+            recipeView = itemView;
         }
     }
 
@@ -76,10 +81,25 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
         holder.recipeText.setText(mRecipeArrayList.get(position).getRecipeName().toString());
         holder.servingsText.setText(servings + mRecipeArrayList.get(position).getServings());
 
-        // TODO Display image with Picasso
+        String imageUrl = mRecipeArrayList.get(position).getImageURL();
+
+        Log.i(TAG, "the picture is " + imageUrl);
+
+        // If the recipe has an image, load it
+        if (!imageUrl.equals("")) {
+            Uri imageUri = Uri.parse(imageUrl).buildUpon().build();
+            holder.recipeImage.setImageURI(imageUri);
+        } else {
+            // If there's no image to the recipe
+            // Get the context
+            Context context = holder.recipeImage.getContext();
+            // Display a default image with Picasso
+            Picasso.with(context).load(R.drawable.brownie).into(holder.recipeImage);
+        }
+
 
         // Making recipe text clickable
-        holder.recipeText.setOnClickListener(new View.OnClickListener() {
+        holder.recipeView.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {

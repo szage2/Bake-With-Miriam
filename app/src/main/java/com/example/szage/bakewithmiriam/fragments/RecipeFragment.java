@@ -3,6 +3,7 @@ package com.example.szage.bakewithmiriam.fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DividerItemDecoration;
+import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -56,11 +57,9 @@ public class RecipeFragment extends Fragment {
 
         // Instantiate the Layout Manager
         mRecipeLayoutManager = new LinearLayoutManager(getActivity());
+
         // Set the Layout Manager on the Recycler View
         mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
-
-        // Call customizing method
-        customizeRecyclerView();
 
         // Instantiate Recipe Adapter
         mRecipeAdapter = new RecipeAdapter(mRecipeArrayList);
@@ -69,17 +68,5 @@ public class RecipeFragment extends Fragment {
 
         // return the rootView
         return rootView;
-    }
-
-    private void customizeRecyclerView() {
-        // Set Recycler View to have fix size
-        mRecipeRecyclerView.setHasFixedSize(true);
-
-        // Create dividers between recipe items in the Recycler View
-        DividerItemDecoration recipeDividerItemDecoration =
-                new DividerItemDecoration(mRecipeRecyclerView.getContext(),
-                        mRecipeLayoutManager.getOrientation());
-        // Add these dividers to the view
-        mRecipeRecyclerView.addItemDecoration(recipeDividerItemDecoration);
     }
 }
