@@ -1,20 +1,15 @@
 package com.example.szage.bakewithmiriam.activities;
 
-import android.appwidget.AppWidgetManager;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.preference.PreferenceManager;
-import android.support.v4.app.FragmentManager;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
 
 import com.example.szage.bakewithmiriam.fragments.DetailFragment;
 import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.fragments.StepFragment;
-import com.example.szage.bakewithmiriam.models.Ingredient;
 import com.example.szage.bakewithmiriam.models.Recipe;
 import com.example.szage.bakewithmiriam.models.Step;
 import com.example.szage.bakewithmiriam.widget.RecipeWidgetProvider;
@@ -25,16 +20,13 @@ import java.util.ArrayList;
 import static com.example.szage.bakewithmiriam.widget.RecipeWidgetProvider.ACTION_UPDATE;
 
 /**
- * Detail Activity passes the Recipe Object to it's fragment.
+ * Detail Activity passes the Recipe Object to detail fragment, updates widget
+ * and send list of steps to step fragments in two-pane mode.
  */
 
 public class DetailActivity extends AppCompatActivity implements DetailFragment.OnStepClickListener {
 
-    private static final String TAG = DetailActivity.class.getSimpleName();
-    private DetailFragment mDetailFragment = DetailFragment.newInstance(this);
-    private StepFragment mStepFragment;
     private Recipe mRecipe;
-    ArrayList<Step> mSteps = new ArrayList<>();
     private boolean mTwoPane;
     private int mStepListIndex;
 
@@ -59,7 +51,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
 
             // set the recipe name as title of the support action bar
             this.getSupportActionBar().setTitle(recipeName);
-
+            // Call method
             sendDataToDetailFragment();
 
             // in case of two pane mode, send the step list to Step Fragment to avoid white screen
@@ -74,44 +66,54 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         }
     }
 
-    // Activity passes the Recipe object to Detail Fragment when it gets created
+    /**
+     * Activity passes the Recipe object and boolean mTwoPane to Detail Fragment
+     * when it gets created
+     */
     public void sendDataToDetailFragment() {
         Bundle detailBundle = new Bundle();
+        // Put extra data into the bundle
         detailBundle.putParcelable("recipe", mRecipe);
         detailBundle.putBoolean("twoPane", mTwoPane);
         // New instance of Detail Fragment
-        mDetailFragment =  new DetailFragment();
+        DetailFragment detailFragment;
+        detailFragment =  new DetailFragment();
         // Set the bundle with desired data as arguments of the fragment
-        mDetailFragment.setArguments(detailBundle);
+        detailFragment.setArguments(detailBundle);
         // Fragment transaction
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.detail_fragment, mDetailFragment).commit();
+                .replace(R.id.detail_fragment, detailFragment).commit();
     }
 
-    // Activity passes the steps array list to Step Fragment when it gets created
+    /**
+     * Activity passes the steps array list to Step Fragment when it gets created
+     */
     public void sendDataToStepFragment() {
+        // Create new array list for Steps
+        ArrayList<Step> steps;
         // Get the steps Array list
-        mSteps = mRecipe.getStepList();
+        steps = mRecipe.getStepList();
         Bundle stepBundle = new Bundle();
-        stepBundle.putParcelableArrayList("steps", mSteps);
+        // Send list of steps
+        stepBundle.putParcelableArrayList("steps", steps);
         // Inform the fragment about two pane mode
         stepBundle.putBoolean("twoPane", mTwoPane);
         // and send the position of the selected step
         stepBundle.putInt("stepListIndex", mStepListIndex);
         // New instance of Step Fragment
-        mStepFragment = new StepFragment();
+        StepFragment stepFragment;
+        stepFragment = new StepFragment();
         // Set the bundle with desired data as arguments of the fragment
-        mStepFragment.setArguments(stepBundle);
+        stepFragment.setArguments(stepBundle);
         // Fragment transaction
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.step_fragment, mStepFragment).commit();
+                .replace(R.id.step_fragment, stepFragment).commit();
     }
 
     /**
      * Broadcast the selected recipe to the widget
      */
     public void sendDataToWidget() {
-        Log.i(TAG, "sendDataToWidget is called");
         // Create an intent that will be used for Recipe Widget Provider
         Intent widgetIntent = new Intent(DetailActivity.this, RecipeWidgetProvider.class);
         // Set the update action on the intent
@@ -122,7 +124,9 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         sendBroadcast(widgetIntent);
     }
 
-    // Once widget is updated
+    /**
+     * Helps to update the widget with chosen recipe
+      */
     public void updateWidget(Recipe recipe) {
         // Get the application context
         Context context = getApplicationContext();

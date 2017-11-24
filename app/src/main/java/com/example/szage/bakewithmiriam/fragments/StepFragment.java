@@ -85,7 +85,7 @@ public class StepFragment extends Fragment {
         try{
             mNavigationListener = (OnClickNavigation) context;
         } catch (ClassCastException ex) {
-            Log.i(TAG, "There is no navigation callback in two pane mode");
+            Log.e(TAG, String.valueOf(R.string.no_navigation));
         }
     }
 
@@ -102,7 +102,7 @@ public class StepFragment extends Fragment {
         // Find the view for previous button, attach it
         mPreviousButton = (Button) rootView.findViewById(R.id.previous_button);
 
-        // Find the view for next button attach it
+        // Find the view for next button, attach it
         mNextButton = (Button) rootView.findViewById(R.id.next_button);
 
         // If there's a save state of code, store true in a flag
@@ -113,9 +113,9 @@ public class StepFragment extends Fragment {
         // Check if the argument has any data sent by the Activity/ StepAdapter
         if (getArguments() != null) {
 
-            // create Step object
+            // Create Step object
             Step step;
-            // variable to identify two/single pane mode
+            // Variable to identify two/single pane mode
             boolean twoPane;
 
             // Get the flag to identify two/single pane mode
@@ -169,7 +169,7 @@ public class StepFragment extends Fragment {
                     }
                 } else {
                     // If there's no video to the recipe, Log it
-                    Log.i(TAG, "There is no video source available");
+                    Log.i(TAG, String.valueOf(R.string.no_video_source));
                     // Replace player's view
                     mSimpleExoPlayerView.setVisibility(View.GONE);
                 }
@@ -180,7 +180,7 @@ public class StepFragment extends Fragment {
                 mLongStepDescription = (TextView) rootView.findViewById(R.id.long_description);
                 mLongStepDescription.setText(longDescription);
             }
-        } else Log.i(TAG, "Step details are not exist");
+        } else Log.e(TAG, String.valueOf(R.string.no_step));
 
         // Inflate the layout for this fragment
         return rootView;
@@ -263,6 +263,7 @@ public class StepFragment extends Fragment {
                 if (mStepListIndex <= mStepList.size() -1) {
                     // increase the list index by 1
                     mStepListIndex++;
+                    // set the callback
                     mNavigationListener.handleNavigation(mStepListIndex);
                 }
             }
@@ -394,7 +395,6 @@ public class StepFragment extends Fragment {
         if (savedInstanceState != null) {
             // Restore the position of the exoPlayer
             mPlayerPosition = savedInstanceState.getLong("playerPosition");
-            Log.i(TAG, "player's position in restore is " + mPlayerPosition);
         }
         // Initialize the player
         initializeExoPlayer();

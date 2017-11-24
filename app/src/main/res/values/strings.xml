@@ -1,19 +1,28 @@
 <resources>
     <string name="app_name">Bake With Miriam</string>
-
-    <!-- TODO: Remove or change this placeholder text -->
-    <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="title_activity_recipe_detail">RecipeDetailActivity</string>
     <string name="title_home">Home</string>
     <string name="title_dashboard">Dashboard</string>
     <string name="title_notifications">Notifications</string>
+    <!-- Titles -->
     <string name="ingredients_title">Ingredients</string>
     <string name="steps_title">Steps</string>
+    <string name="recipes_title">Recipes</string>
+    <!-- Navigation -->
     <string name="navigation_previous">Previous step</string>
     <string name="navigation_next">Next step</string>
-    <string name="recipes_title">Recipes</string>
+    <!-- Empty View -->
     <string name="empty_text_view">Ingredients are not available</string>
+    <!-- Widget -->
     <string name="widget_quantity">Quantity</string>
     <string name="widget_measure">Measure</string>
     <string name="widget_ingredient">Ingredient</string>
+    <!-- Error & notification messages -->
+    <string name="no_recipes">Recipes are not exist</string>
+    <string name="no_navigation">There is no navigation callback in two pane mode</string>
+    <string name="no_video_source">There is no video source available</string>
+    <string name="no_step">Step details are not exist</string>
+    <!-- Recipe List item -->
+    <string name="recipe_name">Recipe name</string>
+    <string name="servings">Servings</string>
 </resources>

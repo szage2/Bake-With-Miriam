@@ -10,9 +10,13 @@ import android.os.Parcelable;
 
 public class Step implements Parcelable{
 
+    // Short description of the recipe step
     private String mShortDescription;
+    // Long description of the recipe step
     private String mLongDescription;
+    // Video Url of the recipe step
     private String mVideoUrl;
+    // Video Thumbnail Url of the recipe step
     private String mThumbnailURL;
 
 
@@ -56,18 +60,30 @@ public class Step implements Parcelable{
         }
     };
 
+    /**
+     * @return the step's short description
+     */
     public String getShortDescription() {
         return mShortDescription;
     }
 
+    /**
+     * @return the step's long description
+     */
     public String getLongDescription() {
         return mLongDescription;
     }
 
+    /**
+     * @return the step's video Url description
+     */
     public String getVideoUrl() {
         return mVideoUrl;
     }
 
+    /**
+     * @return the step's video Thumbnail Url description
+     */
     public String getThumbnailURL() {
         return mThumbnailURL;
     }

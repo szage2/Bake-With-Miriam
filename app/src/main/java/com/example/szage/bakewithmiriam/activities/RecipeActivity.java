@@ -1,9 +1,7 @@
 package com.example.szage.bakewithmiriam.activities;
 
-import android.app.FragmentManager;
 import android.content.Context;
 import android.os.AsyncTask;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -29,7 +27,6 @@ public class RecipeActivity extends AppCompatActivity {
 
     private static final String TAG = RecipeActivity.class.getSimpleName();
     private ArrayList<Recipe> mRecipeList;
-    private RecipeFragment mRecipeFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -53,12 +50,13 @@ public class RecipeActivity extends AppCompatActivity {
         Bundle bundle = new Bundle();
         bundle.putParcelableArrayList("RecipeList", mRecipeList);
         // New instance of Recipe Fragment
-        mRecipeFragment =  new RecipeFragment();
+        RecipeFragment recipeFragment;
+        recipeFragment =  new RecipeFragment();
         // Set the bundle with desired data as arguments of the fragment
-        mRecipeFragment.setArguments(bundle);
+        recipeFragment.setArguments(bundle);
         // Begin fragment transaction
         getSupportFragmentManager().
-                beginTransaction().replace(R.id.recipe_fragment, mRecipeFragment).commit();
+                beginTransaction().replace(R.id.recipe_fragment, recipeFragment).commit();
     }
 
 
@@ -84,7 +82,6 @@ public class RecipeActivity extends AppCompatActivity {
             Response jsonResponse = QueryUtils.getJsonData(context);
 
             try {
-
                 // get the recipe list by calling method getRecipesData
                 mRecipeList = QueryUtils.getRecipesData(jsonResponse);
 

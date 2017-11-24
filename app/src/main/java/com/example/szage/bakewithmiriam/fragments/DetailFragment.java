@@ -21,7 +21,7 @@ import com.example.szage.bakewithmiriam.models.Step;
 import java.util.ArrayList;
 
 /**
- * Detail Fragment displays a list of Ingredients and another list one of preparation Steps.
+ * Detail Fragment displays a list of Ingredients and another list of preparation Steps.
  */
 
 public class DetailFragment extends Fragment {
@@ -29,12 +29,8 @@ public class DetailFragment extends Fragment {
     private static final String TAG = DetailFragment.class.getSimpleName();
     private RecyclerView mIngredientRecyclerView;
     private RecyclerView mStepRecyclerView;
-    private IngredientAdapter mIngredientAdapter;
-    private StepAdapter mStepAdapter;
-    private ArrayList<Ingredient> mIngredientList;
-    private ArrayList<Step> mStepList;
-    private LinearLayoutManager ingredientLayoutManager;
-    private LinearLayoutManager stepLayoutManager;
+    private LinearLayoutManager mIngredientLayoutManager;
+    private LinearLayoutManager mStepLayoutManager;
     private Recipe mRecipe;
     private boolean mTwoPane;
 
@@ -71,8 +67,8 @@ public class DetailFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Create Empty array list for recipes and steps
-        mIngredientList = new ArrayList<>();
-        mStepList = new ArrayList<>();
+        ArrayList<Ingredient> mIngredientList;
+        ArrayList<Step> mStepList;
 
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_detail, container, false);
@@ -95,23 +91,26 @@ public class DetailFragment extends Fragment {
         mIngredientRecyclerView = (RecyclerView) rootView.findViewById(R.id.ingredient_recycler_view);
         mStepRecyclerView = (RecyclerView) rootView.findViewById(R.id.step_recycler_view);
 
-        // Create a new instance of Linear Layout Manager
-        ingredientLayoutManager = new LinearLayoutManager(getActivity());
-        mIngredientRecyclerView.setLayoutManager(ingredientLayoutManager);
+        // Create an instance of Ingredient Layout Manager and set it on Recycler View
+        mIngredientLayoutManager = new LinearLayoutManager(getActivity());
+        mIngredientRecyclerView.setLayoutManager(mIngredientLayoutManager);
 
-        stepLayoutManager = new LinearLayoutManager(getActivity());
-        mStepRecyclerView.setLayoutManager(stepLayoutManager);
+        // Create an instance of Step Layout Manager and set it on Recycler View
+        mStepLayoutManager = new LinearLayoutManager(getActivity());
+        mStepRecyclerView.setLayoutManager(mStepLayoutManager);
 
         // Call customizing method
         customizeRecyclerViews();
 
-        // Instantiate Ingredient and Step Adapters
-        mIngredientAdapter = new IngredientAdapter(mIngredientList);
-        mIngredientRecyclerView.setAdapter(mIngredientAdapter);
+        // Instantiate Ingredient Adapter and set it on Recycler View
+        IngredientAdapter ingredientAdapter;
+        ingredientAdapter = new IngredientAdapter(mIngredientList);
+        mIngredientRecyclerView.setAdapter(ingredientAdapter);
 
-        // Set adapters on Recycler Views
-        mStepAdapter = new StepAdapter(mStepList, recipeName, mListener, mTwoPane);
-        mStepRecyclerView.setAdapter(mStepAdapter);
+        // Instantiate Step Adapter and set it on Recycler View
+        StepAdapter stepAdapter;
+        stepAdapter = new StepAdapter(mStepList, recipeName, mListener, mTwoPane);
+        mStepRecyclerView.setAdapter(stepAdapter);
 
         // return the rootView
         return rootView;
@@ -122,17 +121,17 @@ public class DetailFragment extends Fragment {
         mIngredientRecyclerView.setHasFixedSize(true);
         mStepRecyclerView.setHasFixedSize(true);
 
-        // Create dividers between recipe items in the Ingredient Recycler View
+        // Create dividers between items in the Ingredient Recycler View
         DividerItemDecoration ingredientDividerItemDecoration =
                 new DividerItemDecoration(mIngredientRecyclerView.getContext(),
-                        ingredientLayoutManager.getOrientation());
+                        mIngredientLayoutManager.getOrientation());
         // Add these dividers to the view
         mIngredientRecyclerView.addItemDecoration(ingredientDividerItemDecoration);
 
-        // Create dividers between recipe items in the Step Recycler View
+        // Create dividers between items in the Step Recycler View
         DividerItemDecoration stepDividerItemDecoration =
                 new DividerItemDecoration(mStepRecyclerView.getContext(),
-                        stepLayoutManager.getOrientation());
+                        mStepLayoutManager.getOrientation());
         // Add these dividers to the view
         mStepRecyclerView.addItemDecoration(stepDividerItemDecoration);
     }

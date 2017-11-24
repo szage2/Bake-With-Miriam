@@ -12,7 +12,6 @@ import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.util.Log;
 import android.widget.RemoteViews;
-import android.widget.TextView;
 
 import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.models.Ingredient;
@@ -31,10 +30,15 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
     public static final String ACTION_UPDATE = "android.appwidget.action.APPWIDGET_UPDATE";
     RemoteViews mRemoteViews;
 
+    /**
+     * Updates the App Widget
+     *
+     * @param context is the current context
+     * @param appWidgetManager manages changes, updates of the widget's data
+     * @param appWidgetIds contains unique ids of each app widget
+     */
     @Override
     public void onUpdate(Context context, AppWidgetManager appWidgetManager, int[] appWidgetIds) {
-
-        Log.i("RecipeWidgetProvider", "ingredient list is " + mIngredientList.size());
 
         // Perform this loop procedure for each App Widget that belongs to this provider
         for (int appWidgetId : appWidgetIds) {
@@ -68,6 +72,12 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         super.onUpdate(context, appWidgetManager, appWidgetIds);
     }
 
+    /**
+     * Handles incoming broadcast from Detail Activity
+     *
+     * @param context is the current context
+     * @param intent is a broadcast message
+     */
     @Override
     public void onReceive(Context context, Intent intent) {
         super.onReceive(context, intent);
@@ -94,7 +104,7 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
                     // Get the list of Ingredients
                     mIngredientList = mCurrentRecipe.getIngredientList();
                 }
-                // Check that the appWidgetIds is valid
+                // Check that the appWidgetIds variable is valid
                 if (appWidgetIds != null && appWidgetIds.length > 0) {
                     // Make sure to update the widget every time a recipe gets selected
                     this.onUpdate(context, appWidgetManager, appWidgetIds);
@@ -103,7 +113,6 @@ public class RecipeWidgetProvider extends AppWidgetProvider {
         }
     }
 
-    //
     @TargetApi(Build.VERSION_CODES.ICE_CREAM_SANDWICH)
     private void setRemoteAdapter(final Context context, @NonNull final RemoteViews views) {
         Log.i("setRemoteAdapter", " is working");

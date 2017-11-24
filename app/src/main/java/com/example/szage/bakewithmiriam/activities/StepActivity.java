@@ -1,12 +1,9 @@
 package com.example.szage.bakewithmiriam.activities;
 
 import android.content.Intent;
-import android.content.res.Configuration;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.Window;
-import android.view.WindowManager;
 
 import com.example.szage.bakewithmiriam.R;
 import com.example.szage.bakewithmiriam.fragments.StepFragment;
@@ -15,7 +12,7 @@ import com.example.szage.bakewithmiriam.models.Step;
 import java.util.ArrayList;
 
 /**
- * Detail Activity passes the Step Object to it's fragment.
+ * Step Activity passes the Step Object to it's fragment.
  */
 
 public class StepActivity extends AppCompatActivity implements StepFragment.OnClickNavigation{
@@ -23,7 +20,6 @@ public class StepActivity extends AppCompatActivity implements StepFragment.OnCl
     private Step mStep;
     private ArrayList<Step> mStepList = new ArrayList<>();
     private int mStepListIndex;
-    private StepFragment mStepFragment;
     private final boolean mTwoPane = false;
 
     @Override
@@ -51,7 +47,10 @@ public class StepActivity extends AppCompatActivity implements StepFragment.OnCl
         }
     }
 
-    // Activity passes data to it's Fragment when it gets created
+    /**
+     * Activity passes data to it's Fragment when it gets created,
+     * handel navigation between steps
+     */
     public void sendDataToStepFragment() {
         Bundle stepBundle = new Bundle();
         // Notify fragment it's not two pane mode
@@ -61,11 +60,12 @@ public class StepActivity extends AppCompatActivity implements StepFragment.OnCl
         // Send the position of the Object
         stepBundle.putInt("stepListIndex", mStepListIndex);
         // New instance of Step Fragment
-        mStepFragment = new StepFragment();
+        StepFragment stepFragment;
+        stepFragment = new StepFragment();
         // Set the bundle with desired data as arguments of the fragment
-        mStepFragment.setArguments(stepBundle);
+        stepFragment.setArguments(stepBundle);
         getSupportFragmentManager().beginTransaction()
-                .replace(R.id.step_fragment, mStepFragment).commit();
+                .replace(R.id.step_fragment, stepFragment).commit();
     }
 
     /**
@@ -93,7 +93,6 @@ public class StepActivity extends AppCompatActivity implements StepFragment.OnCl
     @Override
     public void handleNavigation(int listIndex) {
         mStepListIndex = listIndex;
-        Log.i("TAG", "ListIndex in Step Activity is " + mStepListIndex);
         sendDataToStepFragment();
     }
 }

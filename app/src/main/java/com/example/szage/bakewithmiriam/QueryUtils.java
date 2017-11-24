@@ -27,14 +27,12 @@ import okhttp3.Response;
 
 public class QueryUtils {
 
-    private static Context mContext;
-
     private static final String TAG = QueryUtils.class.getSimpleName();
 
     private static final String BASE_URL =
             "https://d17h27t6h515a5.cloudfront.net/topher/2017/May/59121517_baking/baking.json";
 
-    // Create an empty recipe array list, recipe objects will be added to
+    // Create an empty array lists, objects will be added to
     private static ArrayList<Recipe> mRecipes = new ArrayList<>();
     private static ArrayList<Ingredient> mIngredients;
     private static ArrayList<Step> mSteps;

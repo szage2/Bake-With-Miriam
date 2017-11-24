@@ -2,7 +2,6 @@ package com.example.szage.bakewithmiriam.fragments;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -26,12 +25,6 @@ public class RecipeFragment extends Fragment {
 
     private static final String TAG = RecipeFragment.class.getSimpleName();
 
-    private RecyclerView mRecipeRecyclerView;
-    private RecipeAdapter mRecipeAdapter;
-    private ArrayList<Recipe> mRecipeArrayList;
-    private LinearLayoutManager mRecipeLayoutManager;
-    private GridLayoutManager mGridLayoutManager;
-
     public RecipeFragment() {
         // Required empty public constructor
     }
@@ -41,7 +34,7 @@ public class RecipeFragment extends Fragment {
                              Bundle savedInstanceState) {
 
         // Create an Empty array list for recipes
-        mRecipeArrayList = new ArrayList<>();
+        ArrayList<Recipe> recipeArrayList= new ArrayList<>();
 
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_recipe, container, false);
@@ -49,16 +42,20 @@ public class RecipeFragment extends Fragment {
         // Check if the argument has any data sent by the Activity
         if (getArguments() != null) {
             // If it has, get it into the recipe list
-            mRecipeArrayList = getArguments().getParcelableArrayList("RecipeList");
+            recipeArrayList = getArguments().getParcelableArrayList("RecipeList");
             // Otherwise Log the issue.
-        } else Log.i(TAG, "recipes are not exist");
+        } else Log.e(TAG, String.valueOf(R.string.no_recipes));
 
+        // Create RecyclerView
+        RecyclerView recipeRecyclerView;
         // Attach the view to the Recycler View Object
-        mRecipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recipe_recycler_view);
+        recipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recipe_recycler_view);
 
-        // Instantiate the Layout Managers
-        mRecipeLayoutManager = new LinearLayoutManager(getActivity());
-        mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
+        // Create and Instantiate the Layout Managers
+        LinearLayoutManager recipeLayoutManager;
+        recipeLayoutManager = new LinearLayoutManager(getActivity());
+        GridLayoutManager gridLayoutManager;
+        gridLayoutManager = new GridLayoutManager(getActivity(), 2);
 
         // Get the boolean variable from the resources
         boolean isTablet = getResources().getBoolean(R.bool.has_two_panes);
@@ -66,22 +63,19 @@ public class RecipeFragment extends Fragment {
         if (isTablet) {
             // If the device that runs the app is a tablet
             // Set the Layout Manager on the Recycler View
-            mRecipeRecyclerView.setLayoutManager(mGridLayoutManager);
-            Log.i(TAG, "grid layout");
+            recipeRecyclerView.setLayoutManager(gridLayoutManager);
         } else {
             // If the device that runs the app is a phone
             // Set the Grid Manager on the Recycler View
-            mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
-            Log.i(TAG, "linear layout");
+            recipeRecyclerView.setLayoutManager(recipeLayoutManager);
         }
 
-        // Set the Layout Manager on the Recycler View
-        //mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
-
+        // Create Recipe Adapter
+        RecipeAdapter recipeAdapter;
         // Instantiate Recipe Adapter
-        mRecipeAdapter = new RecipeAdapter(mRecipeArrayList);
+        recipeAdapter = new RecipeAdapter(recipeArrayList);
         // Set the adapter on Recycler View
-        mRecipeRecyclerView.setAdapter(mRecipeAdapter);
+        recipeRecyclerView.setAdapter(recipeAdapter);
 
         // return the rootView
         return rootView;

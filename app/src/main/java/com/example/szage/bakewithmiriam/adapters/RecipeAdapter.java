@@ -98,7 +98,7 @@ public class RecipeAdapter extends RecyclerView.Adapter<RecipeAdapter.RecipeHold
         }
 
 
-        // Making recipe text clickable
+        // Making recipe clickable
         holder.recipeView.setOnClickListener(new View.OnClickListener() {
 
             @Override
