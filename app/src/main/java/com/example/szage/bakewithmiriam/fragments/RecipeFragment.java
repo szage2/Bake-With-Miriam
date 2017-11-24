@@ -30,6 +30,7 @@ public class RecipeFragment extends Fragment {
     private RecipeAdapter mRecipeAdapter;
     private ArrayList<Recipe> mRecipeArrayList;
     private LinearLayoutManager mRecipeLayoutManager;
+    private GridLayoutManager mGridLayoutManager;
 
     public RecipeFragment() {
         // Required empty public constructor
@@ -55,11 +56,27 @@ public class RecipeFragment extends Fragment {
         // Attach the view to the Recycler View Object
         mRecipeRecyclerView = (RecyclerView) rootView.findViewById(R.id.recipe_recycler_view);
 
-        // Instantiate the Layout Manager
+        // Instantiate the Layout Managers
         mRecipeLayoutManager = new LinearLayoutManager(getActivity());
+        mGridLayoutManager = new GridLayoutManager(getActivity(), 2);
+
+        // Get the boolean variable from the resources
+        boolean isTablet = getResources().getBoolean(R.bool.has_two_panes);
+
+        if (isTablet) {
+            // If the device that runs the app is a tablet
+            // Set the Layout Manager on the Recycler View
+            mRecipeRecyclerView.setLayoutManager(mGridLayoutManager);
+            Log.i(TAG, "grid layout");
+        } else {
+            // If the device that runs the app is a phone
+            // Set the Grid Manager on the Recycler View
+            mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
+            Log.i(TAG, "linear layout");
+        }
 
         // Set the Layout Manager on the Recycler View
-        mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
+        //mRecipeRecyclerView.setLayoutManager(mRecipeLayoutManager);
 
         // Instantiate Recipe Adapter
         mRecipeAdapter = new RecipeAdapter(mRecipeArrayList);
