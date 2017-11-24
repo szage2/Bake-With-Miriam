@@ -209,9 +209,13 @@ public class StepFragment extends Fragment {
             if (mIsThereSavedState == true) {
                 // continue playing the video from previous position
                 mExoPlayer.seekTo(mPlayerPosition);
-            } else
+            } else if (mPlayerPosition != 0) {
+                // continue playing the video from previous position
+                mExoPlayer.seekTo(mPlayerPosition);
+            } else {
                 // Otherwise play it normally
-            mExoPlayer.seekTo(mExoPlayer.getBufferedPosition());
+                mExoPlayer.seekTo(mExoPlayer.getBufferedPosition());
+            }
         }
     }
 
@@ -219,9 +223,11 @@ public class StepFragment extends Fragment {
      *  Release the player
      */
     private void releaseExoPlayer() {
-        mExoPlayer.stop();
-        mExoPlayer.release();
-        mExoPlayer = null;
+        if (mExoPlayer != null) {
+            mExoPlayer.stop();
+            mExoPlayer.release();
+            mExoPlayer = null;
+        }
     }
 
     /**
@@ -234,6 +240,34 @@ public class StepFragment extends Fragment {
         if (mVideoUri != null) {
             releaseExoPlayer();
         }
+    }
+
+    /**
+     * Release the player when the activity is stopped.
+     */
+    @Override
+    public void onPause() {
+        if (mExoPlayer != null) {
+            mPlayerPosition = mExoPlayer.getCurrentPosition();
+            super.onPause();
+            releaseExoPlayer();
+        }
+    }
+
+    /**
+     * Make status and action bars visible, initialize ExoPlayer
+     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        // Make the status bar visible
+        decorView = getView().getRootView();
+        int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
+        decorView.setSystemUiVisibility(uiOptions);
+        // And show the action bar as well
+        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
+        Log.i(TAG, "player position in on resume is " + mPlayerPosition);
+        initializeExoPlayer();
     }
 
     /**
@@ -362,17 +396,6 @@ public class StepFragment extends Fragment {
         relativeLayout.setLayoutParams(layoutParams);
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        // Make the status bar visible
-        decorView = getView().getRootView();
-        int uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
-        decorView.setSystemUiVisibility(uiOptions);
-        // And show the action bar as well
-        ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-    }
-
     /**
      * Save the state of the current code
      * @param outState holds the saved state
@@ -381,8 +404,14 @@ public class StepFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         // Get the current position of the exoPlayer
-        mPlayerPosition = mExoPlayer.getCurrentPosition();
-        outState.putLong("playerPosition", mPlayerPosition);
+        if (mExoPlayer != null) {
+            mPlayerPosition = mExoPlayer.getCurrentPosition();
+            outState.putLong("playerPosition", mPlayerPosition);
+            Log.i(TAG, "player position in if is " + mPlayerPosition);
+        } else if (mPlayerPosition != 0) {
+            outState.putLong("playerPosition", mPlayerPosition);
+            Log.i(TAG, "player position in else if is " + mPlayerPosition);
+        } else Log.i(TAG, "player position in else is " + mPlayerPosition);
     }
 
     /**
@@ -392,9 +421,11 @@ public class StepFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
+        Log.i(TAG, "saved state is " + savedInstanceState);
         if (savedInstanceState != null) {
             // Restore the position of the exoPlayer
             mPlayerPosition = savedInstanceState.getLong("playerPosition");
+            Log.i(TAG, "player position in restore is " + mPlayerPosition);
         }
         // Initialize the player
         initializeExoPlayer();
