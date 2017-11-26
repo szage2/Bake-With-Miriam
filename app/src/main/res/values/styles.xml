@@ -8,11 +8,50 @@
         <item name="colorAccent">@color/colorAccent</item>
     </style>
 
+    <!-- Overall application style. -->
     <style name="TitleStyle">
-        <item name="android:text"></item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:textSize">16sp</item>
-        <item name="android:textColor">#dd2c00</item>
+        <item name="android:textColor">@color/titleTextColor</item>
         <item name="android:padding">8dp</item>
+    </style>
+
+    <!-- Card style. -->
+    <style name="CardViewStyle">
+        <item name="android:layout_height">150dp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_margin">8dp</item>
+    </style>
+
+    <style name="CardRecipeStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">22sp</item>
+        <item name="android:paddingTop">16dp</item>
+        <item name="android:paddingBottom">8dp</item>
+        <item name="android:layout_marginBottom">30dp</item>
+    </style>
+
+    <style name="CardServingsStyle">
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:textSize">14sp</item>
+        <item name="android:paddingBottom">16dp</item>
+    </style>
+
+    <style name="CardImageStyle">
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:adjustViewBounds">true</item>
+        <item name="android:cropToPadding">false</item>
+        <item name="android:scaleType">fitXY</item>
+    </style>
+
+    <!-- Style for widget. -->
+    <style name="WidgetStyle">
+        <item name="android:textSize">12sp</item>
+        <item name="android:background">@color/backgroundColor</item>
     </style>
 
 </resources>
