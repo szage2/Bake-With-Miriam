@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -32,6 +33,7 @@ import com.google.android.exoplayer2.ui.AspectRatioFrameLayout;
 import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory;
 import com.google.android.exoplayer2.util.Util;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 
@@ -47,6 +49,7 @@ public class StepFragment extends Fragment {
     private ArrayList<Step> mStepList = new ArrayList<>();
 
     private Uri mVideoUri;
+    private Uri mImageUri;
     private TextView mStepDescription;
     private TextView mLongStepDescription;
 
@@ -160,19 +163,29 @@ public class StepFragment extends Fragment {
                     if (savedInstanceState == null) {
                         initializeExoPlayer();
                     }
-                } else if (videoThumbnailURL != null && !videoThumbnailURL.isEmpty()) {
-                    mVideoUri = Uri.parse(videoThumbnailURL);
-                    // initialize the ExoPlayer
-                    // But only if there's no saved state of code
-                    if (savedInstanceState == null) {
-                        initializeExoPlayer();
-                    }
                 } else {
                     // If there's no video to the recipe, Log it
                     Log.i(TAG, String.valueOf(R.string.no_video_source));
                     // Replace player's view
                     mSimpleExoPlayerView.setVisibility(View.GONE);
                 }
+
+                // Find the image view in the layout
+                ImageView stepImage = (ImageView) rootView.findViewById(R.id.step_image);
+
+                // Check that the Step contains an image or not
+                if (videoThumbnailURL != null && !videoThumbnailURL.isEmpty()) {
+                    // parse it and assign it to mImageUri variable
+                    mImageUri = Uri.parse(videoThumbnailURL);
+                }
+                // Try to load the image of the Step
+                Picasso.with(getContext()).load(mImageUri).fit().centerCrop()
+                        // In case of no image available load a place holder
+                        .placeholder(R.drawable.empty_plate)
+                        // In case of error occured load an image of error
+                        .error(R.drawable.empty_plate_error)
+                        // Otherwise load the Step's image
+                        .into(stepImage);
 
                 // Get the text views and set the texts on particular views
                 mStepDescription = (TextView) rootView.findViewById(R.id.step_description);

@@ -31,8 +31,16 @@
         android:paddingTop="8dp"
         android:paddingBottom="8dp"
         android:layout_alignParentLeft="true"
-        android:layout_below="@+id/step_description"
-        />
+        android:layout_below="@+id/step_description" />
+
+    <ImageView
+        android:id="@+id/step_image"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingTop="8dp"
+        android:paddingBottom="8dp"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/long_description"/>
 
     <LinearLayout
         android:layout_width="match_parent"
