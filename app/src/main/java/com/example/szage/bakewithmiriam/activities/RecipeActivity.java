@@ -5,6 +5,9 @@ import android.os.AsyncTask;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.View;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.szage.bakewithmiriam.QueryUtils;
 import com.example.szage.bakewithmiriam.R;
@@ -27,6 +30,7 @@ public class RecipeActivity extends AppCompatActivity {
 
     private static final String TAG = RecipeActivity.class.getSimpleName();
     private ArrayList<Recipe> mRecipeList;
+    private TextView noInternet;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -40,10 +44,14 @@ public class RecipeActivity extends AppCompatActivity {
         if (savedInstanceState != null) {
             Log.i(TAG, "savedInstanceState is not null");
         } runRecipeTask();
+
+        // Find the view in the layout for noInternet text view
+        noInternet = (TextView) findViewById(R.id.no_internet_message);
     }
 
+
     // Method for running Recipe Task
-    public void runRecipeTask() { new RecipeTask().execute(); }
+    public void runRecipeTask() { new RecipeTask().execute();}
 
     // Activity passes the list of recipes to it's Fragment when it gets created
     public void sendDataToFragment() {
@@ -58,7 +66,6 @@ public class RecipeActivity extends AppCompatActivity {
         getSupportFragmentManager().
                 beginTransaction().replace(R.id.recipe_fragment, recipeFragment).commit();
     }
-
 
     /**
      *  Recipe Task is responsible for querying the data asynchronously.
@@ -85,11 +92,21 @@ public class RecipeActivity extends AppCompatActivity {
                 // get the recipe list by calling method getRecipesData
                 mRecipeList = QueryUtils.getRecipesData(jsonResponse);
 
+                // Run this method on the UI thread
+                // to be able to set visibility and toast message if needed
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        setNotificationVisibility();
+                    }
+                });
+
                 // Send the recipe list to the fragment.
                 sendDataToFragment();
 
                 // return the list of recipe objects
                 return mRecipeList;
+
 
             } catch (IOException e) {
                 e.printStackTrace();
@@ -98,6 +115,22 @@ public class RecipeActivity extends AppCompatActivity {
                 ex.printStackTrace();
                 return null;
             }
+        }
+    }
+
+    /**
+     * Show error and toast message depending on the size of the Recipe List
+     */
+    private void setNotificationVisibility() {
+        if (mRecipeList.size() != 0) {
+            // If the Recipe List is not empty, hide the error message
+            noInternet.setVisibility(View.GONE);
+        } else {
+            // If the Recipe List is empty, show a message of the error
+            noInternet.setVisibility(View.VISIBLE);
+            // Ask user to check connectivity in a toast message
+            Toast.makeText(getApplicationContext(), R.string.check_connectivity,
+                    Toast.LENGTH_SHORT).show();
         }
     }
 

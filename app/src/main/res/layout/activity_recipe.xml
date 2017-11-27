@@ -2,6 +2,16 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/recipe_fragment"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
+    android:layout_height="match_parent"
     android:name="com.example.szage.bakewithmiriam.RecipeFragment">
+
+    <TextView
+        android:id="@+id/no_internet_message"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="@string/no_internet"
+        android:visibility="gone"
+        android:gravity="center"
+        style="@style/TitleStyle"/>
+
 </FrameLayout>

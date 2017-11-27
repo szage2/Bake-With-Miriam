@@ -122,34 +122,39 @@ public class QueryUtils {
      */
     public static ArrayList<Recipe> getRecipesData(Response response) throws IOException, JSONException {
 
-        // Clear mRecipes list to make sure items won't be duplicated
-        mRecipes.clear();
+        // Check if the response was successful and it's not null
+        if (response != null && response.isSuccessful()) {
 
-        String jsonData = response.body().string();
-        JSONArray jsonResponseArray = new JSONArray(jsonData);
+            // Clear mRecipes list to make sure items won't be duplicated
+            mRecipes.clear();
 
-        // Iterating through jsonResponseArray to get all recipes
-        for (int i = 0; i < jsonResponseArray.length(); i++) {
+            String jsonData = response.body().string();
 
-            JSONObject recipeObject = jsonResponseArray.getJSONObject(i);
+            JSONArray jsonResponseArray = new JSONArray(jsonData);
 
-            String recipeName = recipeObject.getString(RECIPE_NAME);
-            String imageUrl = recipeObject.getString(RECIPE_IMAGE);
-            String servings = recipeObject.getString(RECIPE_SERVINGS);
+            // Iterating through jsonResponseArray to get all recipes
+            for (int i = 0; i < jsonResponseArray.length(); i++) {
 
-            Log.i(TAG, "recipe name is " + recipeName);
+                JSONObject recipeObject = jsonResponseArray.getJSONObject(i);
 
-            // Call methods for create Lists of Ingredient and Step objects
-            getIngredientData(recipeObject);
-            getStepData(recipeObject);
+                String recipeName = recipeObject.getString(RECIPE_NAME);
+                String imageUrl = recipeObject.getString(RECIPE_IMAGE);
+                String servings = recipeObject.getString(RECIPE_SERVINGS);
 
-            // Creating a new instance of Recipe object
-            Recipe recipe = new Recipe(recipeName, servings, imageUrl, mIngredients, mSteps);
+                Log.i(TAG, "recipe name is " + recipeName);
 
-            // Adding recipe object to the list of recipes
-            mRecipes.add(recipe);
+                // Call methods for create Lists of Ingredient and Step objects
+                getIngredientData(recipeObject);
+                getStepData(recipeObject);
 
-            Log.i(TAG, "mRecipes size is " + mRecipes.size());
+                // Creating a new instance of Recipe object
+                Recipe recipe = new Recipe(recipeName, servings, imageUrl, mIngredients, mSteps);
+
+                // Adding recipe object to the list of recipes
+                mRecipes.add(recipe);
+
+                Log.i(TAG, "mRecipes size is " + mRecipes.size());
+            }
         }
         // Return the list of recipes
         return mRecipes;

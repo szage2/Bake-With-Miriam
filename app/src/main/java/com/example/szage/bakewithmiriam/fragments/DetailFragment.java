@@ -42,10 +42,6 @@ public class DetailFragment extends Fragment {
         void handleOnClick(int position);
     }
 
-    public DetailFragment() {
-        // Required empty public constructor
-    }
-
     public static DetailFragment newInstance(OnStepClickListener listener) {
         DetailFragment detailFragment = new DetailFragment();
         detailFragment.mListener = listener;

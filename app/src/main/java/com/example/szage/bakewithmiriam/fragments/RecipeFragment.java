@@ -25,9 +25,6 @@ public class RecipeFragment extends Fragment {
 
     private static final String TAG = RecipeFragment.class.getSimpleName();
 
-    public RecipeFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,

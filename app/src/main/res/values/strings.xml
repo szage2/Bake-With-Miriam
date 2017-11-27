@@ -22,6 +22,8 @@
     <string name="no_navigation">There is no navigation callback in two pane mode</string>
     <string name="no_video_source">There is no video source available</string>
     <string name="no_step">Step details are not exist</string>
+    <string name="no_internet">Recipes are not available</string>
+    <string name="check_connectivity">Please check your internet connection.</string>
     <!-- Recipe List item -->
     <string name="recipe_name">Recipe name</string>
     <string name="servings">Servings</string>

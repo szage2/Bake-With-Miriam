@@ -72,10 +72,6 @@ public class StepFragment extends Fragment {
         void handleNavigation(int listIndex);
     }
 
-    public StepFragment() {
-        // Required empty public constructor
-    }
-
     public static StepFragment newInstance(OnClickNavigation navigationListener) {
         StepFragment stepFragment = new StepFragment();
         stepFragment.mNavigationListener = navigationListener;
