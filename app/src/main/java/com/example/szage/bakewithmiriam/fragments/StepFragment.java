@@ -59,6 +59,7 @@ public class StepFragment extends Fragment {
     private long mPlayerPosition;
     private SimpleExoPlayerView mSimpleExoPlayerView;
 
+    private boolean mTwoPane;
     private Button mPreviousButton;
     private Button mNextButton;
 
@@ -92,8 +93,6 @@ public class StepFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        Log.i(TAG, "StepFragment is working");
-
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_step, container, false);
 
@@ -116,11 +115,9 @@ public class StepFragment extends Fragment {
 
             // Create Step object
             Step step;
-            // Variable to identify two/single pane mode
-            boolean twoPane;
 
             // Get the flag to identify two/single pane mode
-            twoPane = getArguments().getBoolean("twoPane");
+            mTwoPane = getArguments().getBoolean("twoPane");
             // Get the step list
             mStepList = getArguments().getParcelableArrayList("steps");
             // Get the step's list index
@@ -132,18 +129,8 @@ public class StepFragment extends Fragment {
                 // If step is not selected yet, set it for the very first step
             } else step = mStepList.get(0);
 
-            // Check whether it's two pane mode
-            if (twoPane == true) {
-                // In two pane mode
-                // Make the previous and next buttons disappear in two pane mode
-                mPreviousButton.setVisibility(View.GONE);
-                mNextButton.setVisibility(View.GONE);
-
-            } else {
-                // In single pane mode
-                // Call method makeButtonsClickable
-                makeButtonsClickable();
-            }
+            // call method to take care of navigation buttons
+            handleNavigationButtons();
 
             // Get descriptions, and the video URL for Step
             if (step != null) {
@@ -156,11 +143,6 @@ public class StepFragment extends Fragment {
                 // parse it and assign it to mVideoUri variable
                 if (videoURL != null && !videoURL.isEmpty()) {
                     mVideoUri = Uri.parse(videoURL);
-                    // initialize the ExoPlayer
-                    // But only if there's no saved state of code
-                    if (savedInstanceState == null) {
-                        //initializeExoPlayer();
-                    }
                 } else {
                     // If there's no video to the recipe, Log it
                     Log.i(TAG, String.valueOf(R.string.no_video_source));
@@ -277,7 +259,6 @@ public class StepFragment extends Fragment {
         decorView.setSystemUiVisibility(uiOptions);
         // And show the action bar as well
         ((AppCompatActivity) getActivity()).getSupportActionBar().show();
-        Log.i(TAG, "player position in on resume is " + mPlayerPosition);
         initializeExoPlayer();
     }
 
@@ -329,7 +310,6 @@ public class StepFragment extends Fragment {
      * If orientation in landscape mode, make video full screen and the rest are invisible
      */
     public void orientationChangedToLandscape() {
-        Log.i(TAG, "orientationChangedToLandscape is working");
         // Make texts invisible
         mStepDescription.setVisibility(View.GONE);
         mLongStepDescription.setVisibility(View.GONE);
@@ -344,7 +324,6 @@ public class StepFragment extends Fragment {
      * If orientation in portrait mode, make views visible
      */
     public void orientationChangedToPortrait() {
-        Log.i(TAG, "orientationChangedToPortrait is working");
         // Make texts visible
         mStepDescription.setVisibility(View.VISIBLE);
         mLongStepDescription.setVisibility(View.VISIBLE);
@@ -355,13 +334,9 @@ public class StepFragment extends Fragment {
         mSimpleExoPlayerView.setResizeMode(AspectRatioFrameLayout.RESIZE_MODE_FIT);
     }
 
-    @Override
-    public void onConfigurationChanged(Configuration newConfig) {
-        super.onConfigurationChanged(newConfig);
-
+    public void onOrientationChanged() {
         // get the view in order to override it's features
         decorView = getView().getRootView();
-
         // Get the layout of the fragment
         RelativeLayout relativeLayout = (RelativeLayout) getView().findViewById(R.id.relative_layout);
 
@@ -373,10 +348,8 @@ public class StepFragment extends Fragment {
         // Variable to set visibility of status bar
         int uiOptions = 0;
 
-        Log.i(TAG, "onConfigurationChanged is working");
-
         // If the device is in portrait mode
-        if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
+        if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_PORTRAIT) {
 
             // Make the status bar visible
             uiOptions = View.SYSTEM_UI_FLAG_VISIBLE;
@@ -390,7 +363,7 @@ public class StepFragment extends Fragment {
             // Set the margins on the layout parameters
             layoutParams.setMargins(12,12,12,12);
 
-        } else if (newConfig.orientation == Configuration.ORIENTATION_LANDSCAPE) {
+        } else if (getResources().getConfiguration().orientation == Configuration.ORIENTATION_LANDSCAPE) {
             // If the device is in landscape mode
             // Make the status bar invisible
             uiOptions = View.SYSTEM_UI_FLAG_FULLSCREEN;
@@ -412,6 +385,24 @@ public class StepFragment extends Fragment {
     }
 
     /**
+     * Make navigation buttons clickable or invisible
+     */
+    public void handleNavigationButtons() {
+        // Check whether it's two pane mode
+        if (mTwoPane == true) {
+            // In two pane mode
+            // Make the previous and next buttons disappear in two pane mode
+            mPreviousButton.setVisibility(View.GONE);
+            mNextButton.setVisibility(View.GONE);
+
+        } else {
+            // In single pane mode
+            // Call method makeButtonsClickable
+            makeButtonsClickable();
+        }
+    }
+
+    /**
      * Save the state of the current code
      * @param outState holds the saved state
      */
@@ -422,11 +413,9 @@ public class StepFragment extends Fragment {
         if (mExoPlayer != null) {
             mPlayerPosition = mExoPlayer.getCurrentPosition();
             outState.putLong("playerPosition", mPlayerPosition);
-            Log.i(TAG, "player position in if is " + mPlayerPosition);
         } else if (mPlayerPosition != 0) {
             outState.putLong("playerPosition", mPlayerPosition);
-            Log.i(TAG, "player position in else if is " + mPlayerPosition);
-        } else Log.i(TAG, "player position in else is " + mPlayerPosition);
+        }
     }
 
     /**
@@ -436,13 +425,17 @@ public class StepFragment extends Fragment {
     @Override
     public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
         super.onViewStateRestored(savedInstanceState);
-        Log.i(TAG, "saved state is " + savedInstanceState);
         if (savedInstanceState != null) {
             // Restore the position of the exoPlayer
             mPlayerPosition = savedInstanceState.getLong("playerPosition");
-            Log.i(TAG, "player position in restore is " + mPlayerPosition);
+
+            // In single pane mode
+            if (!mTwoPane) {
+                // Call method to handle orientation change
+                onOrientationChanged();
+            }
+            // call method to take care of navigation
+            handleNavigationButtons();
         }
-        // Initialize the player
-        //initializeExoPlayer();
     }
 }
