@@ -42,7 +42,8 @@ public class StepActivity extends AppCompatActivity implements StepFragment.OnCl
             // set the recipe name as title of the support action bar
             this.getSupportActionBar().setTitle(recipeName);
 
-            // call sendDataToStepFragment method.
+            // call sendDataToStepFragment method if there's no saved state of code.
+            if (savedInstanceState == null)
             sendDataToStepFragment();
         }
     }

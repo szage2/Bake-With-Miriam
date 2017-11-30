@@ -28,7 +28,9 @@ public class DetailFragment extends Fragment {
 
     private static final String TAG = DetailFragment.class.getSimpleName();
     private RecyclerView mIngredientRecyclerView;
+    private int mIngredientScrollPosition;
     private RecyclerView mStepRecyclerView;
+    private int mStepScrollPosition;
     private LinearLayoutManager mIngredientLayoutManager;
     private LinearLayoutManager mStepLayoutManager;
     private Recipe mRecipe;
@@ -103,6 +105,16 @@ public class DetailFragment extends Fragment {
         ingredientAdapter = new IngredientAdapter(mIngredientList);
         mIngredientRecyclerView.setAdapter(ingredientAdapter);
 
+        // In case we have saved state of code
+        if (savedInstanceState != null) {
+            // Get the previous scroll position of RecyclerViews
+            mIngredientScrollPosition = savedInstanceState.getInt("IngredientScrollPosition");
+            mStepScrollPosition = savedInstanceState.getInt("StepScrollPosition");
+            // Maintain these positions after configuration change
+            mIngredientRecyclerView.getLayoutManager().scrollToPosition(mIngredientScrollPosition);
+            mStepRecyclerView.getLayoutManager().scrollToPosition(mStepScrollPosition);
+        }
+
         // Instantiate Step Adapter and set it on Recycler View
         StepAdapter stepAdapter;
         stepAdapter = new StepAdapter(mStepList, recipeName, mListener, mTwoPane);
@@ -130,5 +142,19 @@ public class DetailFragment extends Fragment {
                         mStepLayoutManager.getOrientation());
         // Add these dividers to the view
         mStepRecyclerView.addItemDecoration(stepDividerItemDecoration);
+    }
+
+    /**
+     * Save the current state of code
+     */
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        // Find the current scroll position in RecyclerViews
+        mIngredientScrollPosition = mIngredientLayoutManager.findFirstVisibleItemPosition();
+        mStepScrollPosition = mStepLayoutManager.findFirstVisibleItemPosition();
+        // And save it for later use
+        outState.putInt("IngredientScrollPosition", mIngredientScrollPosition);
+        outState.putInt("StepScrollPosition", + mStepScrollPosition);
     }
 }

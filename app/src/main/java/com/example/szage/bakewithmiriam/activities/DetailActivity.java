@@ -29,6 +29,8 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     private Recipe mRecipe;
     private boolean mTwoPane;
     private int mStepListIndex;
+    private DetailFragment mDetailFragment;
+    private StepFragment mStepFragment;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,6 +41,15 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         if (findViewById(R.id.step_linear_layout) != null) {
             mTwoPane = true;
         } else mTwoPane = false;
+
+        // If there's no saved state of code
+        if (savedInstanceState == null) {
+            // New instance of Detail Fragment
+            mDetailFragment =  new DetailFragment();
+            // Fragment transaction
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.detail_fragment, mDetailFragment).commit();
+        }
 
         // Get the intent that launched this activity with it's extras
         Intent intentThatStartedDetailActivity = getIntent();
@@ -52,12 +63,14 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
             // set the recipe name as title of the support action bar
             this.getSupportActionBar().setTitle(recipeName);
             // Call method
+            if (savedInstanceState == null)
             sendDataToDetailFragment();
 
             // in case of two pane mode, send the step list to Step Fragment to avoid white screen
             // But only if there's not saved state of instance
             if (mTwoPane == true && savedInstanceState == null) {
-                sendDataToStepFragment();
+                // method call
+                sendDataToStepFragment(savedInstanceState);
             }
             // Send data to widget's Provider class
             sendDataToWidget();
@@ -75,20 +88,14 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         // Put extra data into the bundle
         detailBundle.putParcelable("recipe", mRecipe);
         detailBundle.putBoolean("twoPane", mTwoPane);
-        // New instance of Detail Fragment
-        DetailFragment detailFragment;
-        detailFragment =  new DetailFragment();
         // Set the bundle with desired data as arguments of the fragment
-        detailFragment.setArguments(detailBundle);
-        // Fragment transaction
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.detail_fragment, detailFragment).commit();
+        mDetailFragment.setArguments(detailBundle);
     }
 
     /**
      * Activity passes the steps array list to Step Fragment when it gets created
      */
-    public void sendDataToStepFragment() {
+    public void sendDataToStepFragment(Bundle savedInstanceState) {
         // Create new array list for Steps
         ArrayList<Step> steps;
         // Get the steps Array list
@@ -100,14 +107,15 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
         stepBundle.putBoolean("twoPane", mTwoPane);
         // and send the position of the selected step
         stepBundle.putInt("stepListIndex", mStepListIndex);
-        // New instance of Step Fragment
-        StepFragment stepFragment;
-        stepFragment = new StepFragment();
-        // Set the bundle with desired data as arguments of the fragment
-        stepFragment.setArguments(stepBundle);
-        // Fragment transaction
-        getSupportFragmentManager().beginTransaction()
-                .replace(R.id.step_fragment, stepFragment).commit();
+        if (savedInstanceState == null) {
+            // New instance of Step Fragment
+            mStepFragment = new StepFragment();
+            // Set the bundle with desired data as arguments of the fragment
+            mStepFragment.setArguments(stepBundle);
+            // Fragment transaction
+            getSupportFragmentManager().beginTransaction()
+                    .replace(R.id.step_fragment, mStepFragment).commit();
+        }
     }
 
     /**
@@ -172,7 +180,7 @@ public class DetailActivity extends AppCompatActivity implements DetailFragment.
     public void handleOnClick(int position) {
         if (mTwoPane == true) {
             mStepListIndex = position;
-            sendDataToStepFragment();
+            sendDataToStepFragment(null);
         }
     }
 }

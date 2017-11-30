@@ -92,6 +92,8 @@ public class StepFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
+        Log.i(TAG, "StepFragment is working");
+
         // Inflate the layout for this fragment
         final View rootView = inflater.inflate(R.layout.fragment_step, container, false);
 
@@ -157,7 +159,7 @@ public class StepFragment extends Fragment {
                     // initialize the ExoPlayer
                     // But only if there's no saved state of code
                     if (savedInstanceState == null) {
-                        initializeExoPlayer();
+                        //initializeExoPlayer();
                     }
                 } else {
                     // If there's no video to the recipe, Log it
@@ -327,6 +329,7 @@ public class StepFragment extends Fragment {
      * If orientation in landscape mode, make video full screen and the rest are invisible
      */
     public void orientationChangedToLandscape() {
+        Log.i(TAG, "orientationChangedToLandscape is working");
         // Make texts invisible
         mStepDescription.setVisibility(View.GONE);
         mLongStepDescription.setVisibility(View.GONE);
@@ -341,6 +344,7 @@ public class StepFragment extends Fragment {
      * If orientation in portrait mode, make views visible
      */
     public void orientationChangedToPortrait() {
+        Log.i(TAG, "orientationChangedToPortrait is working");
         // Make texts visible
         mStepDescription.setVisibility(View.VISIBLE);
         mLongStepDescription.setVisibility(View.VISIBLE);
@@ -368,6 +372,8 @@ public class StepFragment extends Fragment {
 
         // Variable to set visibility of status bar
         int uiOptions = 0;
+
+        Log.i(TAG, "onConfigurationChanged is working");
 
         // If the device is in portrait mode
         if (newConfig.orientation == Configuration.ORIENTATION_PORTRAIT) {
@@ -437,6 +443,6 @@ public class StepFragment extends Fragment {
             Log.i(TAG, "player position in restore is " + mPlayerPosition);
         }
         // Initialize the player
-        initializeExoPlayer();
+        //initializeExoPlayer();
     }
 }

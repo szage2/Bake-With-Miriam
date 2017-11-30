@@ -37,29 +37,32 @@ public class RecipeActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_recipe);
 
-        // Create an Empty array list for recipes
-        mRecipeList = new ArrayList<>();
-
         // Make sure that Recipe task only gets called when the activity is created
-        if (savedInstanceState != null) {
-            Log.i(TAG, "savedInstanceState is not null");
-        } runRecipeTask();
+        if (savedInstanceState == null) {
+            // Create an Empty array list for recipes
+            mRecipeList = new ArrayList<>();
+            runRecipeTask();
+        } else {
+            // Restore the saved state of code
+            mRecipeList = savedInstanceState.getParcelableArrayList("mRecipeList");
+        }
 
         // Find the view in the layout for noInternet text view
         noInternet = (TextView) findViewById(R.id.no_internet_message);
     }
-
 
     // Method for running Recipe Task
     public void runRecipeTask() { new RecipeTask().execute();}
 
     // Activity passes the list of recipes to it's Fragment when it gets created
     public void sendDataToFragment() {
-        Bundle bundle = new Bundle();
-        bundle.putParcelableArrayList("RecipeList", mRecipeList);
+        Log.i(TAG, "sendDataToFragment is called");
         // New instance of Recipe Fragment
         RecipeFragment recipeFragment;
         recipeFragment =  new RecipeFragment();
+        // Create new Bundle
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("RecipeList", mRecipeList);
         // Set the bundle with desired data as arguments of the fragment
         recipeFragment.setArguments(bundle);
         // Begin fragment transaction
@@ -143,16 +146,5 @@ public class RecipeActivity extends AppCompatActivity {
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putParcelableArrayList("mRecipeList", mRecipeList);
-    }
-
-    /**
-     * Restore the state of code after device rotation.
-     *
-     * @param savedInstanceState has saved (state of) data.
-     */
-    @Override
-    protected void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
-        mRecipeList = savedInstanceState.getParcelableArrayList("mRecipeList");
     }
 }
