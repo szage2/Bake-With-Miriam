@@ -59,9 +59,8 @@ public class RecipeRecyclerViewBasicTest {
     @Test
     public void recipeActivityTest() {
         onView(withId(R.id.recipe_recycler_view))
-                // Scroll to position 0 and Click on item
+                // Scroll to position 0
                 .perform(RecyclerViewActions.scrollToPosition(0))
-                .perform(click())
                 // Check that it's text "Nutella Pie"
                 .check(matches(hasDescendant(withText("Nutella Pie"))));
 
